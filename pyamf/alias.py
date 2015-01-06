@@ -119,7 +119,7 @@ class ClassAlias(object):
             self.decodable_properties.update(self.klass.__slots__)
             self.encodable_properties.update(self.klass.__slots__)
 
-        for k, v in self.klass.__dict__.iteritems():
+        for k, v in self.klass.__dict__.items():
             if not isinstance(v, property):
                 continue
 
@@ -297,7 +297,7 @@ class ClassAlias(object):
             self.alias, self.klass, id(self))
 
     def __eq__(self, other):
-        if isinstance(other, basestring):
+        if isinstance(other, (bytes, str)):
             return self.alias == other
         elif isinstance(other, self.__class__):
             return self.klass == other.klass
@@ -400,14 +400,14 @@ class ClassAlias(object):
         if self.proxy_attrs is not None and attrs and codec:
             context = codec.context
 
-            for k, v in attrs.copy().iteritems():
+            for k, v in attrs.copy().items():
                 if k in self.proxy_attrs:
                     attrs[k] = context.getProxyForObject(v)
 
         if self.synonym_attrs:
             missing = object()
 
-            for k, v in self.synonym_attrs.iteritems():
+            for k, v in self.synonym_attrs.items():
                 value = attrs.pop(k, missing)
 
                 if value is missing:
@@ -479,7 +479,7 @@ class ClassAlias(object):
         if self.synonym_attrs:
             missing = object()
 
-            for k, v in self.synonym_attrs.iteritems():
+            for k, v in self.synonym_attrs.items():
                 value = attrs.pop(k, missing)
 
                 if value is missing:
@@ -517,6 +517,7 @@ class ClassAlias(object):
                 return
 
             if not self.sealed:
+                assert all(isinstance(k, python.unicode_type) for k in attrs.keys())
                 obj.__dict__.update(attrs)
 
                 return

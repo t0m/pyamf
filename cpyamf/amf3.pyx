@@ -778,7 +778,7 @@ cdef class Encoder(codec.Encoder):
         if class_ref == 0:
             self.stream.write(&REF_CHAR, 1)
 
-        for key, value in obj.iteritems():
+        for key, value in obj.items():
             if PyInt_Check(key) or PyLong_Check(key):
                 key = str(key)
 
@@ -1026,7 +1026,7 @@ cdef class Encoder(codec.Encoder):
 
         return self.writeObject(proxy, 1)
 
-    cdef inline int handleBasicTypes(self, object element, object py_type) except -1:
+    cdef int handleBasicTypes(self, object element, object py_type) except -1:
         cdef int ret = codec.Encoder.handleBasicTypes(self, element, py_type)
 
         if ret == 1: # not handled

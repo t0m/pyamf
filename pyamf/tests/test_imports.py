@@ -43,7 +43,7 @@ class ImportsTestCase(unittest.TestCase):
 
     def _clearModules(self, *args):
         for mod in args:
-            for k, v in sys.modules.copy().iteritems():
+            for k in sys.modules.copy().keys():
                 if k.startswith(mod) or k == 'pyamf.tests.%s' % (mod,):
                     del sys.modules[k]
 
@@ -93,10 +93,11 @@ class WhenImportedTestCase(ImportsTestCase):
 
         imports.when_imported('spam', h)
 
+        ex = None
         try:
             import spam
-        except Exception, e:
-            pass
+        except Exception as ex:
+            e = ex
         else:
             self.fail('expected exception')
 

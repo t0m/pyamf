@@ -61,7 +61,7 @@ class WSGIServerTestCase(unittest.TestCase):
 
     def test_bad_request(self):
         request = util.BufferedByteStream()
-        request.write('Bad request')
+        request.write(b'Bad request')
         request.seek(0, 0)
 
         def start_response(status, headers):
@@ -80,7 +80,7 @@ class WSGIServerTestCase(unittest.TestCase):
 
         response = self.doRequest(request, start_response)
 
-        envelope = remoting.decode(''.join(response))
+        envelope = remoting.decode(b''.join(response))
 
         message = envelope['/1']
 
@@ -158,17 +158,19 @@ class WSGIServerTestCase(unittest.TestCase):
 
         td = datetime.timedelta(hours=-5)
         now = datetime.datetime.utcnow()
+        now = now.replace(second=0, microsecond=0)
 
         def echo(d):
-            self.assertEqual(d, now + td)
-
+            tz_test = (now + td).replace(second=0, microsecond=0)
+            self.assertEqual(d, tz_test)
             return d
 
         self.gw.addService(echo)
         self.gw.timezone_offset = -18000
 
         response = self.doRequest(self.makeRequest('echo', now), None)
-        envelope = remoting.decode(''.join(response))
+        envelope = remoting.decode(b''.join(response))
         message = envelope['/1']
+        print(message)
 
         self.assertEqual(message.body, now)

@@ -85,14 +85,14 @@ class DecoderMixIn(object):
     def tearDown(self):
         pass
 
-    def decode(self, bytes, raw=False):
-        if not isinstance(bytes, basestring):
-            bytes = _join(bytes)
+    def decode(self, bytes_var, raw=False):
+        if not isinstance(bytes_var, (str, bytes)):
+            bytes_var = _join(bytes_var)
 
         self.buf.seek(0, 0)
         self.buf.truncate()
 
-        self.buf.write(bytes)
+        self.buf.write(bytes_var)
         self.buf.seek(0, 0)
 
         ret = []
@@ -108,11 +108,11 @@ class DecoderMixIn(object):
 
         return ret
 
-    def assertDecoded(self, decoded, bytes, raw=False, clear=True):
+    def assertDecoded(self, decoded, bytes_var, raw=False, clear=True):
         if clear:
             self.context.clear()
 
-        ret = self.decode(bytes, raw)
+        ret = self.decode(bytes_var, raw)
 
         self.assertEqual(ret, decoded)
         self.assertEqual(self.buf.remaining(), 0)
@@ -135,18 +135,18 @@ class ClassCacheClearingTestCase(unittest.TestCase):
         assert_buffer(self, first, second, msg)
 
     def assertEncodes(self, obj, buffer, encoding=pyamf.AMF3):
-        bytes = pyamf.encode(obj, encoding=encoding).getvalue()
+        bytes_var = pyamf.encode(obj, encoding=encoding).getvalue()
 
-        if isinstance(buffer, basestring):
-            self.assertEqual(bytes, buffer)
+        if isinstance(buffer, (str, bytes)):
+            self.assertEqual(bytes_var, buffer)
 
             return
 
-        self.assertBuffer(bytes, buffer)
+        self.assertBuffer(bytes_var, buffer)
 
-    def assertDecodes(self, bytes, cb, encoding=pyamf.AMF3, raw=False):
-        if not isinstance(bytes, basestring):
-            bytes = _join(bytes)
+    def assertDecodes(self, bytes_var, cb, encoding=pyamf.AMF3, raw=False):
+        if not isinstance(bytes_var, (str, bytes)):
+            bytes_var = _join(bytes_var)
 
         ret = list(pyamf.decode(bytes, encoding=encoding))
 
@@ -179,7 +179,7 @@ def check_buffer(buf, parts, inner=False):
 
                 buf = buf[len(part):]
         else:
-            for k in parts[:]:
+            for _ in parts[:]:
                 for p in parts[:]:
                     if isinstance(p, (tuple, list)):
                         buf = check_buffer(buf, p, inner=True)
@@ -244,10 +244,10 @@ def expectedFailureIfAppengine(func):
 
 
 def _join(parts):
-    ret = ''
+    ret = b''
 
     for p in parts:
-        if not isinstance(p, basestring):
+        if not isinstance(p, (str, bytes)):
             ret += _join(p)
 
             continue

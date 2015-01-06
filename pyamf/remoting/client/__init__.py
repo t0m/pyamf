@@ -7,8 +7,15 @@ Remoting client implementation.
 @since: 0.1
 """
 
-import urllib2
-import urlparse
+try:
+    import urllib2
+except ImportError:
+    import urllib as urllib2
+
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 
 import pyamf
 from pyamf import remoting
@@ -21,7 +28,11 @@ except ImportError:
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    try:
+        from StringIO import StringIO
+    except ImportError:
+        from io import BytesIO as StringIO
+
 
 
 #: Default user agent is `PyAMF/x.x(.x)`.
@@ -224,7 +235,7 @@ class RemotingService(object):
         self.referer = kwargs.pop('referer', None)
         self.strict = kwargs.pop('strict', False)
         self.logger = kwargs.pop('logger', None)
-        self.opener = kwargs.pop('opener', urllib2.urlopen)
+        self.opener = kwargs.pop('opener', pyamf.python.urlopen)
 
         if kwargs:
             raise TypeError('Unexpected keyword arguments %r' % (kwargs,))
@@ -285,7 +296,7 @@ class RemotingService(object):
         @rtype: L{ServiceProxy}
         @raise TypeError: Unexpected type for string C{name}.
         """
-        if not isinstance(name, basestring):
+        if not isinstance(name, (str, bytes)):
             raise TypeError('string type required')
 
         return ServiceProxy(self, name, auto_execute)
@@ -387,7 +398,7 @@ class RemotingService(object):
 
         body = remoting.encode(self.getAMFRequest([request]), strict=self.strict)
 
-        http_request = urllib2.Request(self._root_url, body.getvalue(),
+        http_request = pyamf.python.Request(self._root_url, body.getvalue(),
             self._get_execute_headers())
 
         if self.proxy_args:
@@ -410,7 +421,7 @@ class RemotingService(object):
         body = remoting.encode(self.getAMFRequest(requests),
             strict=self.strict)
 
-        http_request = urllib2.Request(self._root_url, body.getvalue(),
+        http_request = pyamf.python.Request(self._root_url, body.getvalue(),
             self._get_execute_headers())
 
         if self.proxy_args:
@@ -429,7 +440,7 @@ class RemotingService(object):
 
         try:
             fbh = self.opener(http_request)
-        except urllib2.URLError, e:
+        except pyamf.python.URLError as e:
             if self.logger:
                 self.logger.exception('Failed request for %s',
                     self._root_url)
@@ -456,10 +467,10 @@ class RemotingService(object):
             raise remoting.RemotingError('Incorrect MIME type received. '
                 '(got: %s)' % (content_type,))
 
-        bytes = fbh.read(int(content_length))
+        bytes_var = fbh.read(int(content_length))
 
         if self.logger:
-            self.logger.debug('Read %d bytes for the response', len(bytes))
+            self.logger.debug('Read %d bytes for the response', len(bytes_var))
 
         if content_encoding and content_encoding.strip().lower() == 'gzip':
             if not GzipFile:
@@ -467,12 +478,12 @@ class RemotingService(object):
                     'Decompression of Content-Encoding: %s not available.' % (
                         content_encoding,))
 
-            compressedstream = StringIO(bytes)
+            compressedstream = StringIO(bytes_var)
             gzipper = GzipFile(fileobj=compressedstream)
-            bytes = gzipper.read()
+            bytes_var = gzipper.read()
             gzipper.close()
 
-        response = remoting.decode(bytes, strict=self.strict)
+        response = remoting.decode(bytes_var, strict=self.strict)
 
         if self.logger:
             self.logger.debug('Response: %s', response)

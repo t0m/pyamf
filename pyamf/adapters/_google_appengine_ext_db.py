@@ -110,7 +110,7 @@ class DataStoreClassAlias(pyamf.ClassAlias):
         self.properties = {}
         reverse_props = []
 
-        for name, prop in self.klass.properties().iteritems():
+        for name, prop in self.klass.properties().items():
             self.properties[name] = prop
 
             props.append(name)
@@ -125,7 +125,7 @@ class DataStoreClassAlias(pyamf.ClassAlias):
         # check if the property is a defined as a collection_name. These types
         # of properties are read-only and the datastore freaks out if you
         # attempt to meddle with it. We delete the attribute entirely ..
-        for name, value in self.klass.__dict__.iteritems():
+        for name, value in self.klass.__dict__.items():
             if isinstance(value, db._ReverseReferenceProperty):
                 reverse_props.append(name)
 
@@ -147,7 +147,7 @@ class DataStoreClassAlias(pyamf.ClassAlias):
         gae_objects = getGAEObjects(codec.context) if codec else None
 
         if self.reference_properties and gae_objects:
-            for name, prop in self.reference_properties.iteritems():
+            for name, prop in self.reference_properties.items():
                 klass = prop.reference_class
                 key = prop.get_value_for_datastore(obj)
 

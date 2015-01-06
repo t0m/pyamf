@@ -46,7 +46,7 @@ class ArrayCollectionTestCase(unittest.TestCase, EncoderMixIn):
         x.append('eggs')
 
         self.assertEncoded(x,
-            '\n\x07Cflex.messaging.io.ArrayCollection\t\x03\x01\x06\teggs')
+            b'\n\x07Cflex.messaging.io.ArrayCollection\t\x03\x01\x06\teggs')
 
     def test_encode_amf0(self):
         self.encoder = pyamf.get_encoder(pyamf.AMF0)
@@ -56,11 +56,11 @@ class ArrayCollectionTestCase(unittest.TestCase, EncoderMixIn):
         x.append('eggs')
 
         self.assertEncoded(x,
-            '\x11\n\x07Cflex.messaging.io.ArrayCollection\t\x03\x01\x06\teggs')
+            b'\x11\n\x07Cflex.messaging.io.ArrayCollection\t\x03\x01\x06\teggs')
 
     def test_decode_amf3(self):
         stream = util.BufferedByteStream(
-            '\n\x07Cflex.messaging.io.ArrayCollection\t\x03\x01\x06\teggs')
+            b'\n\x07Cflex.messaging.io.ArrayCollection\t\x03\x01\x06\teggs')
         decoder = amf3.Decoder(stream)
         x = decoder.readElement()
 
@@ -69,19 +69,19 @@ class ArrayCollectionTestCase(unittest.TestCase, EncoderMixIn):
 
     def test_decode_proxy(self):
         stream = util.BufferedByteStream(
-            '\x0a\x07;flex.messaging.io.ObjectProxy\x09\x01\x03a\x06\x09spam'
-            '\x03b\x04\x05\x01')
+            b'\x0a\x07;flex.messaging.io.ObjectProxy\x09\x01\x03a\x06\x09spam'
+            b'\x03b\x04\x05\x01')
         decoder = amf3.Decoder(stream)
         decoder.use_proxies = True
 
         x = decoder.readElement()
 
         self.assertEqual(x.__class__, pyamf.MixedArray)
-        self.assertEqual(x, {'a': 'spam', 'b': 5})
+        self.assertEqual(x, {b'a': 'spam', b'b': 5})
 
     def test_decode_amf0(self):
         stream = util.BufferedByteStream(
-            '\x11\n\x07Cflex.messaging.io.ArrayCollection\t\x03\x01\x06\teggs')
+            b'\x11\n\x07Cflex.messaging.io.ArrayCollection\t\x03\x01\x06\teggs')
         decoder = amf0.Decoder(stream)
         x = decoder.readElement()
 
@@ -89,8 +89,8 @@ class ArrayCollectionTestCase(unittest.TestCase, EncoderMixIn):
         self.assertEqual(x, ['eggs'])
 
     def test_source_attr(self):
-        s = ('\n\x07Cflex.messaging.io.ArrayCollection\n\x0b\x01\rsource'
-            '\t\x05\x01\x06\x07foo\x06\x07bar\x01')
+        s = (b'\n\x07Cflex.messaging.io.ArrayCollection\n\x0b\x01\rsource'
+             b'\t\x05\x01\x06\x07foo\x06\x07bar\x01')
 
         x = pyamf.decode(s, encoding=pyamf.AMF3).next()
 
@@ -188,31 +188,31 @@ class ObjectProxyTestCase(unittest.TestCase, EncoderMixIn):
     def test_encode(self):
         x = flex.ObjectProxy(pyamf.MixedArray(a='spam', b=5))
 
-        self.assertEncoded(x, '\n\x07;flex.messaging.io.ObjectProxy\n\x0b\x01',
-            ('\x03a\x06\tspam', '\x03b\x04\x05', '\x01'))
+        self.assertEncoded(x, b'\n\x07;flex.messaging.io.ObjectProxy\n\x0b\x01',
+            (b'\x03a\x06\tspam', b'\x03b\x04\x05', b'\x01'))
 
     def test_decode(self):
         stream = util.BufferedByteStream(
-            '\x0a\x07;flex.messaging.io.ObjectProxy\x09\x01\x03a\x06\x09spam'
-            '\x03b\x04\x05\x01')
+            b'\x0a\x07;flex.messaging.io.ObjectProxy\x09\x01\x03a\x06\x09spam'
+            b'\x03b\x04\x05\x01')
         decoder = amf3.Decoder(stream)
 
         x = decoder.readElement()
 
         self.assertEqual(x.__class__, flex.ObjectProxy)
-        self.assertEqual(x._amf_object, {'a': 'spam', 'b': 5})
+        self.assertEqual(x._amf_object, {b'a': 'spam', b'b': 5})
 
     def test_decode_proxy(self):
         stream = util.BufferedByteStream(
-            '\x0a\x07;flex.messaging.io.ObjectProxy\x09\x01\x03a\x06\x09spam'
-            '\x03b\x04\x05\x01')
+            b'\x0a\x07;flex.messaging.io.ObjectProxy\x09\x01\x03a\x06\x09spam'
+            b'\x03b\x04\x05\x01')
         decoder = amf3.Decoder(stream)
         decoder.use_proxies = True
 
         x = decoder.readElement()
 
         self.assertEqual(x.__class__, pyamf.MixedArray)
-        self.assertEqual(x, {'a': 'spam', 'b': 5})
+        self.assertEqual(x, {b'a': 'spam', b'b': 5})
 
     def test_get_attrs(self):
         x = flex.ObjectProxy()

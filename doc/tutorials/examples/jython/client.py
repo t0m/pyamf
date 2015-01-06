@@ -1,5 +1,5 @@
 import logging
-	
+
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s %(levelname)-5.5s [%(name)s] %(message)s'
@@ -15,5 +15,5 @@ service = client.getService('my_service')
 
 try:
     print service.echo('Hello World!')
-except RemotingError, e:
+except RemotingError as e:
     print e

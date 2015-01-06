@@ -25,13 +25,13 @@ class ArrayTestCase(unittest.TestCase):
         if not array:
             self.skipTest("'array' not available")
 
-        self.orig = ['f', 'o', 'o']
+        self.orig = [102, 111, 111]
 
-        self.obj = array.array('c')
+        self.obj = array.array('b')
 
-        self.obj.append('f')
-        self.obj.append('o')
-        self.obj.append('o')
+        self.obj.append(102)
+        self.obj.append(111)
+        self.obj.append(111)
 
     def encdec(self, encoding):
         return pyamf.decode(pyamf.encode(self.obj, encoding=encoding),

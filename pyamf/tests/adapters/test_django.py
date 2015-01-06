@@ -12,7 +12,7 @@ import sys
 import os
 import datetime
 from shutil import rmtree
-from tempfile import mkdtemp  
+from tempfile import mkdtemp
 
 import pyamf
 from pyamf.tests import util
@@ -91,7 +91,7 @@ def setUpModule():
         from pyamf.adapters import _django_db_models_base as adapter
 
         setup_test_environment()
- 
+
         settings.DATABASE_NAME = create_test_db(verbosity=0, autoclobber=True)
         storage = FileSystemStorage(mkdtemp())
 
@@ -135,11 +135,11 @@ class TypeMapTestCase(BaseTestCase):
         from django.db.models import fields
 
         self.assertEqual(pyamf.encode(fields.NOT_PROVIDED, encoding=pyamf.AMF0).getvalue(),
-            '\x06')
+            b'\x06')
 
         encoder = pyamf.get_encoder(pyamf.AMF3)
         encoder.writeElement(fields.NOT_PROVIDED)
-        self.assertEqual(encoder.stream.getvalue(), '\x00')
+        self.assertEqual(encoder.stream.getvalue(), b'\x00')
 
 
 class ClassAliasTestCase(BaseTestCase):
@@ -321,8 +321,8 @@ class ForeignKeyTestCase(BaseTestCase):
 
         self.assertFalse('_reporter_cache' in a.__dict__)
         self.assertEqual(pyamf.encode(a, encoding=pyamf.AMF3).getvalue(),
-            '\n\x0b\x01\x11headline\x06\x1dThis is a test\x05id\x04\x01'
-            '\x19publications\t\x01\x01\x01')
+            b'\n\x0b\x01\x11headline\x06\x1dThis is a test\x05id\x04\x01'
+            b'\x19publications\t\x01\x01\x01')
 
         del a
 
@@ -341,10 +341,10 @@ class ForeignKeyTestCase(BaseTestCase):
 
         self.assertTrue('_reporter_cache' in a.__dict__)
         self.assertEqual(pyamf.encode(a, encoding=pyamf.AMF3).getvalue(),
-            '\n\x0b\x01\x11reporter\n\x0b\x01\x15first_name\x06\tJohn\x13'
-            'last_name\x06\x0bSmith\x05id\x04\x01\x0bemail\x06!john'
-            '@example.com\x01\x11headline\x06\x1dThis is a test\x19'
-            'publications\t\x01\x01\n\x04\x01\x01')
+            b'\n\x0b\x01\x11reporter\n\x0b\x01\x15first_name\x06\tJohn\x13'
+            b'last_name\x06\x0bSmith\x05id\x04\x01\x0bemail\x06!john'
+            b'@example.com\x01\x11headline\x06\x1dThis is a test\x19'
+            b'publications\t\x01\x01\n\x04\x01\x01')
 
     def test_many_to_many(self):
         # install some test data - taken from
@@ -451,7 +451,7 @@ class I18NTestCase(BaseTestCase):
         from django.utils.translation import ugettext_lazy
 
         self.assertEqual(pyamf.encode(ugettext_lazy('Hello')).getvalue(),
-            '\x06\x0bHello')
+            b'\x06\x0bHello')
 
 
 class PKTestCase(BaseTestCase):
@@ -694,8 +694,8 @@ class ReferenceTestCase(BaseTestCase, util.EncoderMixIn):
         # ensure the referenced attribute resolves
         foo.bar.foo
 
-        self.assertEncoded(foo, '\n\x0b\x01\x07bar\n\x0b\x01\x07foo\n\x00\x05'
-            'id\x04\x01\tname\x06\x00\x01\x04\x04\x01\x06\x06\x02\x01')
+        self.assertEncoded(foo, b'\n\x0b\x01\x07bar\n\x0b\x01\x07foo\n\x00\x05'
+            b'id\x04\x01\tname\x06\x00\x01\x04\x04\x01\x06\x06\x02\x01')
 
 
 class AuthTestCase(BaseTestCase):

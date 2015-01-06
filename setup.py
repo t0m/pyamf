@@ -67,7 +67,7 @@ def setup_package():
         test_suite="pyamf.tests.get_suite",
         zip_safe=False,
         extras_require=setupinfo.get_extras_require(),
-        classifiers=(filter(None, classifiers.split('\n')) +
+        classifiers=([x for x in filter(None, classifiers.split('\n'))] +
             setupinfo.get_trove_classifiers()),
         **setupinfo.extra_setup_args())
 

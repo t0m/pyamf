@@ -92,17 +92,17 @@ class BaseTestCase(util.ClassCacheClearingTestCase):
         if not key:
             # the AMF representation of None
             if encoding == pyamf.AMF3:
-                return '\x01'
+                return b'\x01'
 
-            return '\x05'
+            return b'\x05'
 
         k = str(key)
 
         if encoding == pyamf.AMF3:
-            return '\x06%s%s' % (
+            return b'\x06%s%s' % (
                 amf3.encode_int(len(k) << 1 | amf3.REFERENCE_BIT), k)
 
-        return '\x02%s%s' % (struct.pack('>H', len(k)), k)
+        return b'\x02%s%s' % (struct.pack('>H', len(k)), k)
 
 
 
@@ -139,15 +139,15 @@ class EncodingModelTestCase(BaseTestCase):
 
     def test_amf0(self):
         encoded = (
-            '\x03', (
-                '\x00\x04_key%s' % (self.encodeKey(self.jessica, pyamf.AMF0)),
-                '\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
-                '\x00\x04name\x02\x00\x07Jessica',
-                '\x00\x12spayed_or_neutered\x01\x00',
-                '\x00\x04type\x02\x00\x03cat',
-                '\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00'
+            b'\x03', (
+                b'\x00\x04_key%s' % (self.encodeKey(self.jessica, pyamf.AMF0)),
+                b'\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
+                b'\x00\x04name\x02\x00\x07Jessica',
+                b'\x00\x12spayed_or_neutered\x01\x00',
+                b'\x00\x04type\x02\x00\x03cat',
+                b'\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00'
             ),
-            '\x00\x00\t'
+            b'\x00\x00\t'
         )
 
         self.assertEncodes(self.jessica, encoded, encoding=pyamf.AMF0)
@@ -157,7 +157,7 @@ class EncodingModelTestCase(BaseTestCase):
             '\n\x0b\x01', (
                 '\tname\x06\x0fJessica',
                 '\t_key%s' % (self.encodeKey(self.jessica, pyamf.AMF3)),
-                '\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
+                b'\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
                 '!weight_in_pounds\x04\x05',
                 '\ttype\x06\x07cat',
                 '%spayed_or_neutered\x02\x01'
@@ -168,14 +168,14 @@ class EncodingModelTestCase(BaseTestCase):
     def test_save_amf0(self):
         self.put(self.jessica)
 
-        bytes = ('\x03', (
-            '\x00\x04_key%s' % self.encodeKey(self.jessica, pyamf.AMF0),
-            '\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
-            '\x00\x04name\x02\x00\x07Jessica',
-            '\x00\x12spayed_or_neutered\x01\x00',
-            '\x00\x04type\x02\x00\x03cat',
-            '\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00'),
-            '\x00\x00\t')
+        bytes = (b'\x03', (
+            b'\x00\x04_key%s' % self.encodeKey(self.jessica, pyamf.AMF0),
+            b'\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
+            b'\x00\x04name\x02\x00\x07Jessica',
+            b'\x00\x12spayed_or_neutered\x01\x00',
+            b'\x00\x04type\x02\x00\x03cat',
+            b'\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00'),
+            b'\x00\x00\t')
 
         self.assertEncodes(self.jessica, bytes, encoding=pyamf.AMF0)
 
@@ -186,7 +186,7 @@ class EncodingModelTestCase(BaseTestCase):
             '\n\x0b\x01', (
                 '\tname\x06\x0fJessica',
                 '\t_key%s' % self.encodeKey(self.jessica, pyamf.AMF3),
-                '\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
+                b'\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
                 '!weight_in_pounds\x04\x05',
                 '\ttype\x06\x07cat',
                 '%spayed_or_neutered\x02\x01'
@@ -198,15 +198,15 @@ class EncodingModelTestCase(BaseTestCase):
         pyamf.register_class(test_models.PetModel, 'Pet')
 
         bytes = (
-            '\x10\x00\x03Pet', (
-                '\x00\x04_key%s' % self.encodeKey(self.jessica, pyamf.AMF0),
-                '\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
-                '\x00\x04name\x02\x00\x07Jessica',
-                '\x00\x12spayed_or_neutered\x01\x00',
-                '\x00\x04type\x02\x00\x03cat',
-                '\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00'
+            b'\x10\x00\x03Pet', (
+                b'\x00\x04_key%s' % self.encodeKey(self.jessica, pyamf.AMF0),
+                b'\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
+                b'\x00\x04name\x02\x00\x07Jessica',
+                b'\x00\x12spayed_or_neutered\x01\x00',
+                b'\x00\x04type\x02\x00\x03cat',
+                b'\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00'
             ),
-            '\x00\x00\t'
+            b'\x00\x00\t'
         )
 
         self.assertEncodes(self.jessica, bytes, encoding=pyamf.AMF0)
@@ -218,9 +218,9 @@ class EncodingModelTestCase(BaseTestCase):
             '\n\x0b\x07Pet', (
                 '\tname\x06\x0fJessica',
                 '\t_key%s' % self.encodeKey(self.jessica, pyamf.AMF3),
-                '\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
+                b'\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
                 '!weight_in_pounds\x04\x05',
-                '\x07foo\x06\x07bar',
+                b'\x07foo\x06\x07bar',
                 '\ttype\x06\x07cat',
                 '%spayed_or_neutered\x02\x01'
             ))
@@ -242,16 +242,16 @@ class EncodingExpandoTestCase(BaseTestCase):
 
     def test_amf0(self):
         bytes = (
-            '\x03', (
-                '\x00\x04_key%s' % self.encodeKey(self.jessica, pyamf.AMF0),
-                '\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
-                '\x00\x04name\x02\x00\x07Jessica',
-                '\x00\x12spayed_or_neutered\x01\x00',
-                '\x00\x04type\x02\x00\x03cat',
-                '\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00',
-                '\x00\x03foo\x02\x00\x03bar'
+            b'\x03', (
+                b'\x00\x04_key%s' % self.encodeKey(self.jessica, pyamf.AMF0),
+                b'\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
+                b'\x00\x04name\x02\x00\x07Jessica',
+                b'\x00\x12spayed_or_neutered\x01\x00',
+                b'\x00\x04type\x02\x00\x03cat',
+                b'\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00',
+                b'\x00\x03foo\x02\x00\x03bar'
             ),
-            '\x00\x00\t'
+            b'\x00\x00\t'
         )
 
         self.assertEncodes(self.jessica, bytes, encoding=pyamf.AMF0)
@@ -261,9 +261,9 @@ class EncodingExpandoTestCase(BaseTestCase):
             '\n\x0b\x01', (
                 '\tname\x06\x0fJessica',
                 '\t_key%s' % self.encodeKey(self.jessica, pyamf.AMF3),
-                '\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
+                b'\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
                 '!weight_in_pounds\x04\x05',
-                '\x07foo\x06\x07bar',
+                b'\x07foo\x06\x07bar',
                 '\ttype\x06\x07cat',
                 '%spayed_or_neutered\x02\x01'
             ))
@@ -275,15 +275,15 @@ class EncodingExpandoTestCase(BaseTestCase):
 
         bytes = pyamf.encode(self.jessica, encoding=pyamf.AMF0).getvalue()
 
-        self.assertBuffer(bytes, ('\x03', (
-            '\x00\x04_key%s' % self.encodeKey(self.jessica, pyamf.AMF0),
-            '\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
-            '\x00\x04name\x02\x00\x07Jessica',
-            '\x00\x12spayed_or_neutered\x01\x00',
-            '\x00\x04type\x02\x00\x03cat',
-            '\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00',
-            '\x00\x03foo\x02\x00\x03bar'),
-            '\x00\x00\t'))
+        self.assertBuffer(bytes, (b'\x03', (
+            b'\x00\x04_key%s' % self.encodeKey(self.jessica, pyamf.AMF0),
+            b'\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
+            b'\x00\x04name\x02\x00\x07Jessica',
+            b'\x00\x12spayed_or_neutered\x01\x00',
+            b'\x00\x04type\x02\x00\x03cat',
+            b'\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00',
+            b'\x00\x03foo\x02\x00\x03bar'),
+            b'\x00\x00\t'))
 
     def test_save_amf3(self):
         self.put(self.jessica)
@@ -292,9 +292,9 @@ class EncodingExpandoTestCase(BaseTestCase):
             '\n\x0b\x01', (
                 '\tname\x06\x0fJessica',
                 '\t_key%s' % self.encodeKey(self.jessica, pyamf.AMF3),
-                '\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
+                b'\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
                 '!weight_in_pounds\x04\x05',
-                '\x07foo\x06\x07bar',
+                b'\x07foo\x06\x07bar',
                 '\ttype\x06\x07cat',
                 '%spayed_or_neutered\x02\x01'
             ))
@@ -305,15 +305,15 @@ class EncodingExpandoTestCase(BaseTestCase):
         pyamf.register_class(test_models.PetExpando, 'Pet')
         bytes = pyamf.encode(self.jessica, encoding=pyamf.AMF0).getvalue()
 
-        self.assertBuffer(bytes, ('\x10\x00\x03Pet', (
-            '\x00\x04_key%s' % self.encodeKey(self.jessica, pyamf.AMF0),
-            '\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
-            '\x00\x04name\x02\x00\x07Jessica',
-            '\x00\x12spayed_or_neutered\x01\x00',
-            '\x00\x04type\x02\x00\x03cat',
-            '\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00',
-            '\x00\x03foo\x02\x00\x03bar'),
-            '\x00\x00\t'))
+        self.assertBuffer(bytes, (b'\x10\x00\x03Pet', (
+            b'\x00\x04_key%s' % self.encodeKey(self.jessica, pyamf.AMF0),
+            b'\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00\x00\x00\x00\x00',
+            b'\x00\x04name\x02\x00\x07Jessica',
+            b'\x00\x12spayed_or_neutered\x01\x00',
+            b'\x00\x04type\x02\x00\x03cat',
+            b'\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00',
+            b'\x00\x03foo\x02\x00\x03bar'),
+            b'\x00\x00\t'))
 
     def test_alias_amf3(self):
         pyamf.register_class(test_models.PetExpando, 'Pet')
@@ -322,9 +322,9 @@ class EncodingExpandoTestCase(BaseTestCase):
             '\n\x0b\x07Pet', (
                 '\tname\x06\x0fJessica',
                 '\t_key%s' % self.encodeKey(self.jessica, pyamf.AMF3),
-                '\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
+                b'\x13birthdate\x08\x01B^\xc4\xae\xaa\x00\x00\x00',
                 '!weight_in_pounds\x04\x05',
-                '\x07foo\x06\x07bar',
+                b'\x07foo\x06\x07bar',
                 '\ttype\x06\x07cat',
                 '%spayed_or_neutered\x02\x01'
             ))
@@ -352,16 +352,16 @@ class EncodingReferencesTestCase(BaseTestCase):
         self.assertIdentical(b.author, a)
 
         bytes = (
-            '\x03', (
-                '\x00\x05title\x02\x00\x15Sense and Sensibility',
-                '\x00\x04_key' + amf0_k,
-                '\x00\x06author\x03', (
-                    '\x00\x04name\x02\x00\x0bJane Austen',
-                    '\x00\x04_key\x05'
+            b'\x03', (
+                b'\x00\x05title\x02\x00\x15Sense and Sensibility',
+                b'\x00\x04_key' + amf0_k,
+                b'\x00\x06author\x03', (
+                    b'\x00\x04name\x02\x00\x0bJane Austen',
+                    b'\x00\x04_key\x05'
                 ),
-                '\x00\x00\t'
+                b'\x00\x00\t'
             ),
-            '\x00\x00\t')
+            b'\x00\x00\t')
 
         self.assertEncodes(b, bytes, encoding=pyamf.AMF0)
 
@@ -370,10 +370,10 @@ class EncodingReferencesTestCase(BaseTestCase):
                 '\rauthor\n\x0b\x01', (
                     '\t_key' + amf3_k,
                     '\tname\x06\x17Jane Austen'
-                ), '\x01\x06\x01'),
-                '\x0btitle\x06+Sense and Sensibility'
+                ), b'\x01\x06\x01'),
+                b'\x0btitle\x06+Sense and Sensibility'
             ),
-            '\x01')
+            b'\x01')
 
         self.assertEncodes(b, bytes, encoding=pyamf.AMF3)
 
@@ -382,16 +382,16 @@ class EncodingReferencesTestCase(BaseTestCase):
         pyamf.register_class(test_models.Novel, 'Novel')
 
         bytes = (
-            '\x10\x00\x05Novel', (
-                '\x00\x05title\x02\x00\x15Sense and Sensibility',
-                '\x00\x04_key' + amf0_k,
-                '\x00\x06author\x10\x00\x06Author', (
-                    '\x00\x04name\x02\x00\x0bJane Austen',
-                    '\x00\x04_key\x05'
+            b'\x10\x00\x05Novel', (
+                b'\x00\x05title\x02\x00\x15Sense and Sensibility',
+                b'\x00\x04_key' + amf0_k,
+                b'\x00\x06author\x10\x00\x06Author', (
+                    b'\x00\x04name\x02\x00\x0bJane Austen',
+                    b'\x00\x04_key\x05'
                 ),
-                '\x00\x00\t'
+                b'\x00\x00\t'
             ),
-            '\x00\x00\t')
+            b'\x00\x00\t')
 
         self.assertEncodes(b, bytes, encoding=pyamf.AMF0)
 
@@ -400,10 +400,10 @@ class EncodingReferencesTestCase(BaseTestCase):
                 '\rauthor\n\x0b\rAuthor', (
                     '\t_key' + amf3_k,
                     '\tname\x06\x17Jane Austen'
-                ), '\x01\n\x01'),
-                '\x0btitle\x06+Sense and Sensibility'
+                ), b'\x01\n\x01'),
+                b'\x0btitle\x06+Sense and Sensibility'
             ),
-            '\x01')
+            b'\x01')
 
         self.assertEncodes(b, bytes, encoding=pyamf.AMF3)
 
@@ -427,16 +427,16 @@ class EncodingReferencesTestCase(BaseTestCase):
         self.assertIdentical(b.author, a)
 
         bytes = (
-            '\x03', (
-                '\x00\x05title\x02\x00\x15Sense and Sensibility',
-                '\x00\x04_key\x02' + amf0_k,
-                '\x00\x06author\x03', (
-                    '\x00\x04name\x02\x00\x0bJane Austen',
-                    '\x00\x04_key\x05'
+            b'\x03', (
+                b'\x00\x05title\x02\x00\x15Sense and Sensibility',
+                b'\x00\x04_key\x02' + amf0_k,
+                b'\x00\x06author\x03', (
+                    b'\x00\x04name\x02\x00\x0bJane Austen',
+                    b'\x00\x04_key\x05'
                 ),
-                '\x00\x00\t'
+                b'\x00\x00\t'
             ),
-            '\x00\x00\t')
+            b'\x00\x00\t')
 
         self.assertEncodes(b, bytes, encoding=pyamf.AMF0)
 
@@ -445,10 +445,10 @@ class EncodingReferencesTestCase(BaseTestCase):
                 '\rauthor\n\x0b\x01', (
                     '\t_key\x06' + amf3_k,
                     '\tname\x06\x17Jane Austen\x01'
-                ), '\x02\x01'),
-                '\x0btitle\x06+Sense and Sensibility'
+                ), b'\x02\x01'),
+                b'\x0btitle\x06+Sense and Sensibility'
             ),
-            '\x01')
+            b'\x01')
 
         self.assertEncodes(b, bytes, encoding=pyamf.AMF3)
 
@@ -457,16 +457,16 @@ class EncodingReferencesTestCase(BaseTestCase):
         pyamf.register_class(Novel, 'Novel')
 
         bytes = (
-            '\x10\x00\x05Novel', (
-                '\x00\x05title\x02\x00\x15Sense and Sensibility',
-                '\x00\x04_key\x02' + amf0_k,
-                '\x00\x06author\x10\x00\x06Author', (
-                    '\x00\x04name\x02\x00\x0bJane Austen',
-                    '\x00\x04_key\x05'
+            b'\x10\x00\x05Novel', (
+                b'\x00\x05title\x02\x00\x15Sense and Sensibility',
+                b'\x00\x04_key\x02' + amf0_k,
+                b'\x00\x06author\x10\x00\x06Author', (
+                    b'\x00\x04name\x02\x00\x0bJane Austen',
+                    b'\x00\x04_key\x05'
                 ),
-                '\x00\x00\t'
+                b'\x00\x00\t'
             ),
-            '\x00\x00\t')
+            b'\x00\x00\t')
 
         self.assertEncodes(b, bytes, encoding=pyamf.AMF0)
 
@@ -475,10 +475,10 @@ class EncodingReferencesTestCase(BaseTestCase):
                 '\rauthor\n\x0b\rAuthor', (
                     '\t_key\x06' + amf3_k,
                     '\tname\x06\x17Jane Austen\x01'
-                ), '\x06\x01'),
-                '\x0btitle\x06+Sense and Sensibility'
+                ), b'\x06\x01'),
+                b'\x0btitle\x06+Sense and Sensibility'
             ),
-            '\x01')
+            b'\x01')
 
         self.assertEncodes(b, bytes, encoding=pyamf.AMF3)
 
@@ -498,19 +498,19 @@ class EncodingReferencesTestCase(BaseTestCase):
         el = self.encodeKey(a, pyamf.AMF0)
 
         bytes = (
-            '\x03', (
-                '\x00\x05title\x02\x00\x15Sense and Sensibility',
-                '\x00\x04_key' + ek,
-                '\x00\x06author\x03', (
-                    '\x00\x03bar\n\x00\x00\x00\x03\x00?\xf0\x00\x00\x00\x00'
-                    '\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00@\x08\x00'
-                    '\x00\x00\x00\x00\x00',
-                    '\x00\x04name\x02\x00\x0bJane Austen',
-                    '\x00\x04_key' + el
+            b'\x03', (
+                b'\x00\x05title\x02\x00\x15Sense and Sensibility',
+                b'\x00\x04_key' + ek,
+                b'\x00\x06author\x03', (
+                    b'\x00\x03bar\n\x00\x00\x00\x03\x00?\xf0\x00\x00\x00\x00'
+                    b'\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00@\x08\x00'
+                    b'\x00\x00\x00\x00\x00',
+                    b'\x00\x04name\x02\x00\x0bJane Austen',
+                    b'\x00\x04_key' + el
                 ),
-                '\x00\x00\t'
+                b'\x00\x00\t'
             ),
-            '\x00\x00\t')
+            b'\x00\x00\t')
 
         self.assertEncodes(x, bytes, encoding=pyamf.AMF0)
 
@@ -530,14 +530,14 @@ class ListPropertyTestCase(BaseTestCase):
 
     def test_encode_amf0(self):
         bytes = (
-            '\x03', (
-                '\x00\x04_key\x05',
-                '\x00\x07numbers\n\x00\x00\x00\x05\x00@'
-                '\x00\x00\x00\x00\x00\x00\x00\x00@\x10\x00\x00\x00\x00\x00'
-                '\x00\x00@\x18\x00\x00\x00\x00\x00\x00\x00@\x20\x00\x00\x00'
-                '\x00\x00\x00\x00@$\x00\x00\x00\x00\x00\x00'
+            b'\x03', (
+                b'\x00\x04_key\x05',
+                b'\x00\x07numbers\n\x00\x00\x00\x05\x00@'
+                b'\x00\x00\x00\x00\x00\x00\x00\x00@\x10\x00\x00\x00\x00\x00'
+                b'\x00\x00@\x18\x00\x00\x00\x00\x00\x00\x00@\x20\x00\x00\x00'
+                b'\x00\x00\x00\x00@$\x00\x00\x00\x00\x00\x00'
             ),
-            '\x00\x00\t'
+            b'\x00\x00\t'
         )
 
         self.assertEncodes(self.obj, bytes, encoding=pyamf.AMF0)
@@ -546,8 +546,8 @@ class ListPropertyTestCase(BaseTestCase):
         bytes = (
             '\n\x0b\x01', (
                 '\t_key\x01',
-                '\x0fnumbers\t\x0b\x01\x04\x02\x04\x04\x04\x06\x04\x08\x04\n'
-                    '\x01'
+                b'\x0fnumbers\t\x0b\x01\x04\x02\x04\x04\x04\x06\x04\x08\x04\n'
+                    b'\x01'
             )
         )
 
@@ -557,14 +557,14 @@ class ListPropertyTestCase(BaseTestCase):
         pyamf.register_class(test_models.ListModel, 'list-model')
 
         bytes = (
-            '\x10\x00\nlist-model', (
-                '\x00\x04_key\x05',
-                '\x00\x07numbers\n\x00\x00\x00\x05\x00@'
-                '\x00\x00\x00\x00\x00\x00\x00\x00@\x10\x00\x00\x00\x00\x00'
-                '\x00\x00@\x18\x00\x00\x00\x00\x00\x00\x00@\x20\x00\x00\x00'
-                '\x00\x00\x00\x00@$\x00\x00\x00\x00\x00\x00'
+            b'\x10\x00\nlist-model', (
+                b'\x00\x04_key\x05',
+                b'\x00\x07numbers\n\x00\x00\x00\x05\x00@'
+                b'\x00\x00\x00\x00\x00\x00\x00\x00@\x10\x00\x00\x00\x00\x00'
+                b'\x00\x00@\x18\x00\x00\x00\x00\x00\x00\x00@\x20\x00\x00\x00'
+                b'\x00\x00\x00\x00@$\x00\x00\x00\x00\x00\x00'
             ),
-            '\x00\x00\t'
+            b'\x00\x00\t'
         )
 
         self.assertEncodes(self.obj, bytes, encoding=pyamf.AMF0)
@@ -575,8 +575,8 @@ class ListPropertyTestCase(BaseTestCase):
         bytes = (
             '\n\x0b\x15list-model', (
                 '\t_key\x01',
-                '\x0fnumbers\t\x0b\x01\x04\x02\x04\x04\x04\x06\x04\x08\x04\n'
-                    '\x01'
+                b'\x0fnumbers\t\x0b\x01\x04\x02\x04\x04\x04\x06\x04\x08\x04\n'
+                    b'\x01'
             )
         )
 
@@ -591,10 +591,10 @@ class ListPropertyTestCase(BaseTestCase):
         pyamf.register_class(test_models.ListModel, 'list-model')
 
         bytes = (
-            '\x10\x00\nlist-model\x00\x07numbers\n\x00\x00\x00\x05\x00@\x00'
-            '\x00\x00\x00\x00\x00\x00\x00@\x10\x00\x00\x00\x00\x00\x00\x00@'
-            '\x18\x00\x00\x00\x00\x00\x00\x00@ \x00\x00\x00\x00\x00\x00\x00@'
-            '$\x00\x00\x00\x00\x00\x00\x00\x00\t')
+            b'\x10\x00\nlist-model\x00\x07numbers\n\x00\x00\x00\x05\x00@\x00'
+            b'\x00\x00\x00\x00\x00\x00\x00@\x10\x00\x00\x00\x00\x00\x00\x00@'
+            b'\x18\x00\x00\x00\x00\x00\x00\x00@ \x00\x00\x00\x00\x00\x00\x00@'
+            b'$\x00\x00\x00\x00\x00\x00\x00\x00\t')
 
         x = self.decode(bytes, encoding=pyamf.AMF0)
         self._check_list(x)
@@ -603,8 +603,8 @@ class ListPropertyTestCase(BaseTestCase):
         pyamf.register_class(test_models.ListModel, 'list-model')
 
         bytes = (
-            '\n\x0b\x15list-model\x0fnumbers\t\x0b\x01\x04\x02\x04\x04\x04'
-            '\x06\x04\x08\x04\n\x01')
+            b'\n\x0b\x15list-model\x0fnumbers\t\x0b\x01\x04\x02\x04\x04\x04'
+            b'\x06\x04\x08\x04\n\x01')
 
         x = self.decode(bytes, encoding=pyamf.AMF3)
         self._check_list(x)
@@ -612,7 +612,7 @@ class ListPropertyTestCase(BaseTestCase):
     def test_none(self):
         pyamf.register_class(test_models.ListModel, 'list-model')
 
-        bytes = '\x10\x00\nlist-model\x00\x07numbers\x05\x00\x00\t'
+        bytes = b'\x10\x00\nlist-model\x00\x07numbers\x05\x00\x00\t'
 
         x = self.decode(bytes, encoding=pyamf.AMF0)
 
@@ -655,10 +655,10 @@ class DecodingModelTestCase(BaseTestCase):
 
     def test_amf0(self):
         bytes = (
-            '\x10\x00\x03Pet\x00\x04_key%s\x00\x04type\x02\x00\x03cat'
-            '\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00\x00'
-            '\x04name\x02\x00\x07Jessica\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00'
-            '\x00\x00\x00\x00\x00\x12spayed_or_neutered\x01\x00\x00\x00\t' % (
+            b'\x10\x00\x03Pet\x00\x04_key%s\x00\x04type\x02\x00\x03cat'
+            b'\x00\x10weight_in_pounds\x00@\x14\x00\x00\x00\x00\x00\x00\x00'
+            b'\x04name\x02\x00\x07Jessica\x00\tbirthdate\x0bB^\xc4\xae\xaa\x00'
+            b'\x00\x00\x00\x00\x00\x12spayed_or_neutered\x01\x00\x00\x00\t' % (
                 self.encodeKey(self.key, pyamf.AMF0),))
 
         x = self.decode(bytes, encoding=pyamf.AMF0)
@@ -667,9 +667,9 @@ class DecodingModelTestCase(BaseTestCase):
 
     def test_amf3(self):
         bytes = (
-            '\n\x0b\x07Pet\tname\x06\x0fJessica\t_key%s\x13birthdate'
-            '\x08\x01B^\xc4\xae\xaa\x00\x00\x00!weight_in_pounds\x04\x05\x07'
-            'foo\x06\x07bar\ttype\x06\x07cat%%spayed_or_neutered\x02\x01' % (
+            b'\n\x0b\x07Pet\tname\x06\x0fJessica\t_key%s\x13birthdate'
+            b'\x08\x01B^\xc4\xae\xaa\x00\x00\x00!weight_in_pounds\x04\x05\x07'
+            b'foo\x06\x07bar\ttype\x06\x07cat%%spayed_or_neutered\x02\x01' % (
                 self.encodeKey(self.key, pyamf.AMF3),))
 
         x = self.decode(bytes, encoding=pyamf.AMF3)
@@ -917,7 +917,7 @@ class ReferencesTestCase(BaseTestCase):
         stream.truncate()
 
         encoder.writeElement(self.jessica2)
-        self.assertEqual(stream.getvalue(), '\x07\x00\x00')
+        self.assertEqual(stream.getvalue(), b'\x07\x00\x00')
 
     def test_amf3(self):
         encoder = pyamf.get_encoder(pyamf.AMF3)
@@ -1116,19 +1116,19 @@ class BlobStoreTestCase(BaseTestCase):
     """
 
     bytes = (
-        '\n\x0bOgoogle.appengine.ext.blobstore.BlobInfo', (
-            '\tsize\x04\xcb\xad\x07',
-            '\x11creation\x08\x01Br\x9c\x1d\xbeh\x80\x00',
-            '\x07key\x06\rfoobar',
-            '\x19content_type\x06\x15text/plain',
-            '\x11filename\x06\x1fnot-telling.ogg'
-        ), '\x01')
+        b'\n\x0bOgoogle.appengine.ext.blobstore.BlobInfo', (
+            b'\tsize\x04\xcb\xad\x07',
+            b'\x11creation\x08\x01Br\x9c\x1d\xbeh\x80\x00',
+            b'\x07key\x06\rfoobar',
+            b'\x19content_type\x06\x15text/plain',
+            b'\x11filename\x06\x1fnot-telling.ogg'
+        ), b'\x01')
 
     values = {
         'content_type': 'text/plain',
         'size': 1234567,
         'filename': 'not-telling.ogg',
-        'creation': datetime.datetime(2010, 07, 11, 14, 15, 01)
+        'creation': datetime.datetime(2010, 7, 11, 14, 15, 1)
     }
 
     def setUp(self):

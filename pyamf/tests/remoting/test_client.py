@@ -10,12 +10,9 @@ Tests for Remoting client.
 """
 
 import unittest
-import urllib2
-
 import pyamf
 from pyamf import remoting, util
 from pyamf.remoting import client
-
 
 class ServiceMethodProxyTestCase(unittest.TestCase):
     def test_create(self):
@@ -218,7 +215,7 @@ class MockOpener(object):
 
     def open(self, request, data=None, timeout=None):
         if self.response.code != 200:
-            raise urllib2.URLError(self.response.code)
+            raise pyamf.python.URLError(self.response.code)
 
         self.request = request
         self.data = data
@@ -256,10 +253,10 @@ class BaseServiceTestCase(unittest.TestCase):
     """
     """
 
-    canned_response = ('\x00\x00\x00\x00\x00\x01\x00\x0b/1/onResult\x00'
-        '\x04null\x00\x00\x00\x00\n\x00\x00\x00\x03\x00?\xf0\x00\x00'
-        '\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00@\x08\x00'
-        '\x00\x00\x00\x00\x00')
+    canned_response = (b'\x00\x00\x00\x00\x00\x01\x00\x0b/1/onResult\x00'
+        b'\x04null\x00\x00\x00\x00\n\x00\x00\x00\x03\x00?\xf0\x00\x00'
+        b'\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00@\x08\x00'
+        b'\x00\x00\x00\x00\x00')
 
     headers = {
         'Content-Type': 'application/x-amf',
@@ -436,8 +433,8 @@ class RemotingServiceTestCase(BaseServiceTestCase):
         self.assertEqual(r.get_method(), 'POST')
         self.assertEqual(r.get_full_url(), 'http://example.org/amf-gateway')
 
-        self.assertEqual(r.get_data(), '\x00\x00\x00\x00\x00\x01\x00\x07'
-            'baz.gak\x00\x02/1\x00\x00\x00\x00\x0a\x00\x00\x00\x00')
+        self.assertEqual(pyamf.python.request_get_data(r), b'\x00\x00\x00\x00\x00\x01\x00\x07'
+            b'baz.gak\x00\x02/1\x00\x00\x00\x00\x0a\x00\x00\x00\x00')
 
         self.assertEqual(response.status, remoting.STATUS_OK)
         self.assertEqual(response.body, [1, 2, 3])
@@ -464,12 +461,12 @@ class RemotingServiceTestCase(BaseServiceTestCase):
         self.assertEqual(r.get_method(), 'POST')
         self.assertEqual(r.get_full_url(), 'http://example.org/amf-gateway')
 
-        self.assertEqual(r.get_data(), '\x00\x00\x00\x00\x00\x02\x00\x07'
-            'baz.gak\x00\x02/1\x00\x00\x00\x00\n\x00\x00\x00\x00\x00\tspam.'
-            'eggs\x00\x02/2\x00\x00\x00\x00\n\x00\x00\x00\x00')
+        self.assertEqual(pyamf.python.request_get_data(r), b'\x00\x00\x00\x00\x00\x02\x00\x07'
+            b'baz.gak\x00\x02/1\x00\x00\x00\x00\n\x00\x00\x00\x00\x00\tspam.'
+            b'eggs\x00\x02/2\x00\x00\x00\x00\n\x00\x00\x00\x00')
 
     def test_get_response(self):
-        self.setResponse(200, '\x00\x00\x00\x00\x00\x00\x00\x00')
+        self.setResponse(200, b'\x00\x00\x00\x00\x00\x00\x00\x00')
 
         self.gw._getResponse(None)
 
@@ -484,7 +481,7 @@ class RemotingServiceTestCase(BaseServiceTestCase):
 
     def test_credentials(self):
         self.assertFalse('Credentials' in self.gw.headers)
-        self.gw.setCredentials('spam', 'eggs')
+        self.gw.setCredentials(b'spam', b'eggs')
         self.assertTrue('Credentials' in self.gw.headers)
         self.assertEqual(self.gw.headers['Credentials'],
             {'userid': u'spam', 'password': u'eggs'})
@@ -497,8 +494,8 @@ class RemotingServiceTestCase(BaseServiceTestCase):
         self.assertEqual(cred, self.gw.headers['Credentials'])
 
     def test_append_url_header(self):
-        self.setResponse(200, '\x00\x00\x00\x01\x00\x12AppendToGatewayUrl'
-            '\x01\x00\x00\x00\x00\x02\x00\x05hello\x00\x00\x00\x00', {
+        self.setResponse(200, b'\x00\x00\x00\x01\x00\x12AppendToGatewayUrl'
+            b'\x01\x00\x00\x00\x00\x02\x00\x05hello\x00\x00\x00\x00', {
             'Content-Type': 'application/x-amf'})
 
         response = self.gw._getResponse(None)
@@ -508,8 +505,8 @@ class RemotingServiceTestCase(BaseServiceTestCase):
             'http://example.org/amf-gatewayhello')
 
     def test_replace_url_header(self):
-        self.setResponse(200, '\x00\x00\x00\x01\x00\x11ReplaceGatewayUrl\x01'
-            '\x00\x00\x00\x00\x02\x00\x10http://spam.eggs\x00\x00\x00\x00',
+        self.setResponse(200, b'\x00\x00\x00\x01\x00\x11ReplaceGatewayUrl\x01'
+            b'\x00\x00\x00\x00\x02\x00\x10http://spam.eggs\x00\x00\x00\x00',
             {'Content-Type': 'application/x-amf'})
 
         response = self.gw._getResponse(None)
@@ -544,8 +541,8 @@ class RemotingServiceTestCase(BaseServiceTestCase):
             'User-agent': self.gw.user_agent
         }
 
-        self.setResponse(200, '\x00\x00\x00\x01\x00\x11ReplaceGatewayUrl'
-            '\x01\x00\x00\x00\x00\x02\x00\x10http://spam.eggs\x00\x00\x00\x00')
+        self.setResponse(200, b'\x00\x00\x00\x01\x00\x11ReplaceGatewayUrl'
+            b'\x01\x00\x00\x00\x00\x02\x00\x10http://spam.eggs\x00\x00\x00\x00')
 
         self.gw.execute()
 
@@ -554,8 +551,8 @@ class RemotingServiceTestCase(BaseServiceTestCase):
         self.assertEqual(expected_headers, request.headers)
 
     def test_empty_content_length(self):
-        self.setResponse(200, '\x00\x00\x00\x01\x00\x11ReplaceGatewayUrl\x01'
-            '\x00\x00\x00\x00\x02\x00\x10http://spam.eggs\x00\x00\x00\x00', {
+        self.setResponse(200, b'\x00\x00\x00\x01\x00\x11ReplaceGatewayUrl\x01'
+            b'\x00\x00\x00\x00\x02\x00\x10http://spam.eggs\x00\x00\x00\x00', {
             'Content-Type': 'application/x-amf',
             'Content-Length': ''
         })
@@ -621,6 +618,6 @@ class GZipTestCase(BaseServiceTestCase):
 
     def test_bad_response(self):
         self.headers['Content-Length'] = len('foobar')
-        self.setResponse(200, 'foobar', self.headers)
+        self.setResponse(200, b'foobar', self.headers)
 
         self.assertRaises(IOError, self.gw._getResponse, None)

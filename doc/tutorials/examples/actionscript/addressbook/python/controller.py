@@ -19,7 +19,7 @@ class SAObject(object):
     """
     Handles common operations for persistent objects.
     """
-    
+
     def load(self, class_alias, key):
         klass = pyamf.load_class(class_alias).klass
         session = Schema().session
@@ -59,13 +59,13 @@ class SAObject(object):
         user.first_name = 'Bill'
         user.last_name = 'Lumbergh'
         user.created = datetime.utcnow()
-        for label, email in {'personal': 'bill@yahoo.com', 'work': 'bill@initech.com'}.iteritems():
+        for label, email in {'personal': 'bill@yahoo.com', 'work': 'bill@initech.com'}.items():
             email_obj = models.Email()
             email_obj.label = label
             email_obj.email = email
             user.emails.append(email_obj)
 
-        for label, number in {'personal': '1-800-555-5555', 'work': '1-555-555-5555'}.iteritems():
+        for label, number in {'personal': '1-800-555-5555', 'work': '1-555-555-5555'}.items():
             phone_obj = models.PhoneNumber()
             phone_obj.label = label
             phone_obj.number = number
@@ -74,5 +74,5 @@ class SAObject(object):
         session = Schema().session
         session.add(user)
         session.commit()
-        
+
         return 'Added user: %s %s' % (user.first_name, user.last_name)

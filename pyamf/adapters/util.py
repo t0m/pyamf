@@ -7,10 +7,10 @@ Useful helpers for adapters.
 @since: 0.4
 """
 
-import __builtin__
-
-if not hasattr(__builtin__, 'set'):
-    from sets import Set as set
+# import __builtin__
+# 
+# if not hasattr(__builtin__, 'set'):
+#     from sets import Set as set
 
 
 def to_list(obj, encoder):

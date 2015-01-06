@@ -259,7 +259,7 @@ class _Codec(object):
 
     def __init__(self, stream=None, context=None, strict=False,
                  timezone_offset=None):
-        if isinstance(stream, basestring) or stream is None:
+        if isinstance(stream, (str, unicode)) or stream is None: #py3k compat in header
             stream = util.BufferedByteStream(stream)
 
         self.stream = stream
@@ -344,6 +344,9 @@ class Decoder(_Codec):
 
             raise
 
+    def __next__(self):
+        return self.next()
+
     def __iter__(self):
         return self
 
@@ -422,11 +425,10 @@ class Encoder(_Codec):
         """
         Iterates over a generator object and encodes all that is returned.
         """
-        n = getattr(gen, 'next')
 
         while True:
             try:
-                self.writeElement(n())
+                self.writeElement(next(gen))
             except StopIteration:
                 break
 
@@ -441,9 +443,9 @@ class Encoder(_Codec):
         t = type(data)
 
         # try types that we know will work
-        if t is str or issubclass(t, str):
+        if t is str or issubclass(t, str): #py3k compat in header
             return self.writeBytes
-        if t is unicode or issubclass(t, unicode):
+        if t is unicode or issubclass(t, unicode): #py3k compat in header
             return self.writeString
         elif t is bool:
             return self.writeBoolean
@@ -463,7 +465,7 @@ class Encoder(_Codec):
             return self.writeXML
 
         # check for any overridden types
-        for type_, func in pyamf.TYPE_MAP.iteritems():
+        for type_, func in pyamf.TYPE_MAP.items():
             try:
                 if isinstance(data, type_):
                     return _CustomTypeFunc(self, func)
@@ -481,7 +483,7 @@ class Encoder(_Codec):
         elif isinstance(data, python.func_types):
             # can't encode code objects
             return None
-        elif isinstance(t, types.ModuleType):
+        elif t == types.ModuleType:
             # cannot encode module objects
             return None
 
@@ -527,6 +529,9 @@ class Encoder(_Codec):
         self.stream.seek(start_pos)
 
         return self.stream.read(end_pos - start_pos)
+
+    def __next__(self):
+        return self.next()
 
     def __iter__(self):
         return self

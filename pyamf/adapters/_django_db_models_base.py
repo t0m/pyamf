@@ -153,7 +153,7 @@ class DjangoClassAlias(pyamf.ClassAlias):
         if not attrs:
             attrs = {}
 
-        for name, prop in self.fields.iteritems():
+        for name, prop in self.fields.items():
             if name not in attrs.keys():
                 continue
 
@@ -165,7 +165,7 @@ class DjangoClassAlias(pyamf.ClassAlias):
             if key.startswith('_'):
                 del attrs[key]
 
-        for name, relation in self.relations.iteritems():
+        for name, relation in self.relations.items():
             if '_%s_cache' % name in obj.__dict__:
                 attrs[name] = getattr(obj, name)
 
@@ -192,7 +192,7 @@ class DjangoClassAlias(pyamf.ClassAlias):
 
         # primary key of django object must always be set first for
         # relationships with other model objects to work properly
-        # and dict.iteritems() does not guarantee order
+        # and dict.items() does not guarantee order
         #
         # django also forces the use only one attribute as primary key, so
         # our obj._meta.pk.attname check is sufficient)
@@ -211,7 +211,7 @@ class DjangoClassAlias(pyamf.ClassAlias):
                     pass
 
         if not getattr(obj, pk_attr):
-            for name, relation in self.relations.iteritems():
+            for name, relation in self.relations.items():
                 if isinstance(relation, related.ManyToManyField):
                     try:
                         if len(attrs[name]) == 0:

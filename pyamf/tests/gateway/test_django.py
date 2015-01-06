@@ -39,7 +39,7 @@ class DjangoGatewayTestCase(BaseTestCase):
         import new
 
         self.mod_name = '%s.%s' % (__name__, 'settings')
-        sys.modules[self.mod_name] = new.module(self.mod_name)
+        sys.modules[self.mod_name] = pyamf.python.new_module_func(self.mod_name)
 
         self.old_env = os.environ.get('DJANGO_SETTINGS_MODULE', None)
 
@@ -102,9 +102,9 @@ class DjangoGatewayTestCase(BaseTestCase):
         gw = django.DjangoGateway()
 
         request = util.BufferedByteStream()
-        request.write('\x00\x00\x00\x00\x00\x01\x00\x09test.test\x00'
-            '\x02/1\x00\x00\x00\x14\x0a\x00\x00\x00\x01\x08\x00\x00\x00\x00'
-            '\x00\x01\x61\x02\x00\x01\x61\x00\x00\x09')
+        request.write(b'\x00\x00\x00\x00\x00\x01\x00\x09test.test\x00'
+            b'\x02/1\x00\x00\x00\x14\x0a\x00\x00\x00\x01\x08\x00\x00\x00\x00'
+            b'\x00\x01\x61\x02\x00\x01\x61\x00\x00\x09')
         request.seek(0, 0)
 
         http_request = http.HttpRequest()
@@ -134,8 +134,8 @@ class DjangoGatewayTestCase(BaseTestCase):
         gw = django.DjangoGateway({'test.test': test}, expose_request=True)
 
         request = util.BufferedByteStream()
-        request.write('\x00\x00\x00\x00\x00\x01\x00\x09test.test\x00'
-            '\x02/1\x00\x00\x00\x05\x0a\x00\x00\x00\x00')
+        request.write(b'\x00\x00\x00\x00\x00\x01\x00\x09test.test\x00'
+            b'\x02/1\x00\x00\x00\x05\x0a\x00\x00\x00\x00')
         request.seek(0, 0)
 
         http_request.method = 'POST'

@@ -68,16 +68,18 @@ class FaultTestCase(unittest.TestCase):
         decoder = pyamf.get_decoder(pyamf.AMF0)
         decoder.stream = encoder.stream
 
+        exc_info = None
         try:
             raise TypeError("Unknown type")
         except TypeError:
+            exc_info = sys.exc_info()
             encoder.writeElement(amf0.build_fault(*sys.exc_info()))
 
         buffer = encoder.stream
         buffer.seek(0, 0)
 
         fault = decoder.readElement()
-        old_fault = amf0.build_fault(*sys.exc_info())
+        old_fault = amf0.build_fault(*exc_info)
 
         self.assertEqual(fault.level, old_fault.level)
         self.assertEqual(fault.type, old_fault.type)
@@ -237,9 +239,7 @@ class BaseGatewayTestCase(unittest.TestCase):
 
         self.assertRaises(TypeError, gw.addService, 1)
 
-        import new
-
-        temp = new.module('temp')
+        temp = pyamf.python.new_module_func('temp')
         gw.addService(temp)
 
         self.assertTrue(temp in gw.services)

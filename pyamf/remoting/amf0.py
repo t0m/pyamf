@@ -10,7 +10,7 @@ AMF0 Remoting support.
 import traceback
 import sys
 
-from pyamf import remoting
+from pyamf import remoting, python
 from pyamf.remoting import gateway
 
 
@@ -132,4 +132,4 @@ def build_fault(cls, e, tb, include_traceback=False):
     if include_traceback:
         details = traceback.format_exception(cls, e, tb)
 
-    return remoting.ErrorFault(code=code, description=unicode(e), details=details)
+    return remoting.ErrorFault(code=code, description=python.unicode_type(e), details=details)

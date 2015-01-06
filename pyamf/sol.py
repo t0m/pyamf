@@ -18,11 +18,11 @@ import pyamf
 from pyamf import util
 
 #: Magic Number - 2 bytes
-HEADER_VERSION = '\x00\xbf'
+HEADER_VERSION = b'\x00\xbf'
 #: Marker - 10 bytes
-HEADER_SIGNATURE = 'TCSO\x00\x04\x00\x00\x00\x00'
+HEADER_SIGNATURE = b'TCSO\x00\x04\x00\x00\x00\x00'
 #: Padding - 4 bytes
-PADDING_BYTE = '\x00'
+PADDING_BYTE = b'\x00'
 
 
 def decode(stream, strict=True):
@@ -117,7 +117,7 @@ def encode(name, values, strict=True, encoding=pyamf.AMF0):
     stream.write(PADDING_BYTE * 3)
     stream.write_uchar(encoding)
 
-    for n, v in values.iteritems():
+    for n, v in values.items():
         encoder.serialiseString(n)
         encoder.writeElement(v)
 
@@ -127,7 +127,6 @@ def encode(name, values, strict=True, encoding=pyamf.AMF0):
     if strict:
         stream.seek(length_pos)
         stream.write_ulong(stream.remaining() - 4)
-
     stream.seek(0)
 
     return stream
@@ -143,7 +142,7 @@ def load(name_or_file):
     f = name_or_file
     opened = False
 
-    if isinstance(name_or_file, basestring):
+    if isinstance(name_or_file, pyamf.python.str_types):
         f = open(name_or_file, 'rb')
         opened = True
     elif not hasattr(f, 'read'):
@@ -152,7 +151,7 @@ def load(name_or_file):
     name, values = decode(f.read())
     s = SOL(name)
 
-    for n, v in values.iteritems():
+    for n, v in values.items():
         s[n] = v
 
     if opened is True:
@@ -171,7 +170,7 @@ def save(sol, name_or_file, encoding=pyamf.AMF0):
     f = name_or_file
     opened = False
 
-    if isinstance(name_or_file, basestring):
+    if isinstance(name_or_file, pyamf.python.str_types):
         f = open(name_or_file, 'wb+')
         opened = True
     elif not hasattr(f, 'write'):

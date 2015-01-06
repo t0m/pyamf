@@ -10,13 +10,15 @@ Do not reference directly, use L{pyamf.util.BufferedByteStream} instead.
 
 @since: 0.6
 """
-
 import struct
 
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    try:
+        from StringIO import StringIO
+    except ImportError:
+        from io import BytesIO as StringIO
 
 from pyamf import python
 
@@ -497,12 +499,12 @@ class DataTypeMixIn(object):
         if not isinstance(u, python.str_types):
             raise TypeError('Expected %r, got %r' % (python.str_types, u))
 
-        bytes = u
+        if isinstance(u, python.unicode_type):
+            bytes_to_write = u.encode("utf8")
+        else:
+            bytes_to_write = u
 
-        if isinstance(bytes, unicode):
-            bytes = u.encode("utf8")
-
-        self.write(struct.pack("%s%ds" % (self.endian, len(bytes)), bytes))
+        self.write(struct.pack("%s%ds" % (self.endian, len(bytes_to_write)), bytes_to_write))
 
 
 class BufferedByteStream(StringIOProxy, DataTypeMixIn):
@@ -540,7 +542,7 @@ class BufferedByteStream(StringIOProxy, DataTypeMixIn):
 
     def peek(self, size=1):
         """
-        Looks C{size} bytes ahead in the stream, returning what it finds,
+        Looks C{size} bytes_var ahead in the stream, returning what it finds,
         returning the stream pointer to its initial position.
 
         @param size: Default is 1.
@@ -555,15 +557,15 @@ class BufferedByteStream(StringIOProxy, DataTypeMixIn):
         if size < -1:
             raise ValueError("Cannot peek backwards")
 
-        bytes = ''
+        bytes_var = b''
         pos = self.tell()
 
-        while not self.at_eof() and len(bytes) != size:
-            bytes += self.read(1)
+        while not self.at_eof() and len(bytes_var) != size:
+            bytes_var += self.read(1)
 
         self.seek(pos)
 
-        return bytes
+        return bytes_var
 
     def remaining(self):
         """
@@ -631,7 +633,7 @@ def is_float_broken():
     @return: Boolean indicating whether floats are broken on this platform.
     """
     return str(python.NaN) != str(
-        struct.unpack("!d", '\xff\xf8\x00\x00\x00\x00\x00\x00')[0])
+        struct.unpack("!d", b'\xff\xf8\x00\x00\x00\x00\x00\x00')[0])
 
 
 # init the module from here ..
@@ -645,22 +647,22 @@ if is_float_broken():
         bytes = self.read(8)
 
         if self._is_big_endian():
-            if bytes == '\xff\xf8\x00\x00\x00\x00\x00\x00':
+            if bytes == b'\xff\xf8\x00\x00\x00\x00\x00\x00':
                 return python.NaN
 
-            if bytes == '\xff\xf0\x00\x00\x00\x00\x00\x00':
+            if bytes == b'\xff\xf0\x00\x00\x00\x00\x00\x00':
                 return python.NegInf
 
-            if bytes == '\x7f\xf0\x00\x00\x00\x00\x00\x00':
+            if bytes == b'\x7f\xf0\x00\x00\x00\x00\x00\x00':
                 return python.PosInf
         else:
-            if bytes == '\x00\x00\x00\x00\x00\x00\xf8\xff':
+            if bytes == b'\x00\x00\x00\x00\x00\x00\xf8\xff':
                 return python.NaN
 
-            if bytes == '\x00\x00\x00\x00\x00\x00\xf0\xff':
+            if bytes == b'\x00\x00\x00\x00\x00\x00\xf0\xff':
                 return python.NegInf
 
-            if bytes == '\x00\x00\x00\x00\x00\x00\xf0\x7f':
+            if bytes == b'\x00\x00\x00\x00\x00\x00\xf0\x7f':
                 return python.PosInf
 
         return struct.unpack("%sd" % self.endian, bytes)[0]
@@ -679,19 +681,19 @@ if is_float_broken():
 
         if python.isNaN(d):
             if self._is_big_endian():
-                self.write('\xff\xf8\x00\x00\x00\x00\x00\x00')
+                self.write(b'\xff\xf8\x00\x00\x00\x00\x00\x00')
             else:
-                self.write('\x00\x00\x00\x00\x00\x00\xf8\xff')
+                self.write(b'\x00\x00\x00\x00\x00\x00\xf8\xff')
         elif python.isNegInf(d):
             if self._is_big_endian():
-                self.write('\xff\xf0\x00\x00\x00\x00\x00\x00')
+                self.write(b'\xff\xf0\x00\x00\x00\x00\x00\x00')
             else:
-                self.write('\x00\x00\x00\x00\x00\x00\xf0\xff')
+                self.write(b'\x00\x00\x00\x00\x00\x00\xf0\xff')
         elif python.isPosInf(d):
             if self._is_big_endian():
-                self.write('\x7f\xf0\x00\x00\x00\x00\x00\x00')
+                self.write(b'\x7f\xf0\x00\x00\x00\x00\x00\x00')
             else:
-                self.write('\x00\x00\x00\x00\x00\x00\xf0\x7f')
+                self.write(b'\x00\x00\x00\x00\x00\x00\xf0\x7f')
         else:
             write_double_workaround.old_func(self, d)
 
@@ -700,7 +702,7 @@ if is_float_broken():
     write_double_workaround.old_func = x
 
 
-if struct.pack('@H', 1)[0] == '\x01':
+if struct.pack('@H', 1)[0] == b'\x01':
     SYSTEM_ENDIAN = DataTypeMixIn.ENDIAN_LITTLE
 else:
     SYSTEM_ENDIAN = DataTypeMixIn.ENDIAN_BIG

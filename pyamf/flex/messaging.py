@@ -532,7 +532,7 @@ def decode_uuid(obj):
 
     @since: 0.5
     """
-    return uuid.UUID(bytes=str(obj))
+    return uuid.UUID(bytes=obj.getvalue())
 
 
 pyamf.register_package(globals(), package=NAMESPACE)

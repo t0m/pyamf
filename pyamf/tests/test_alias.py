@@ -14,6 +14,7 @@ import unittest
 import pyamf
 from pyamf import ClassAlias
 from pyamf.tests.util import ClassCacheClearingTestCase, Spam, get_fqcn
+import sys
 
 try:
     set
@@ -96,6 +97,7 @@ class ClassAliasTestCase(ClassCacheClearingTestCase):
     def test_bad_class(self):
         self.assertRaises(TypeError, ClassAlias, 'eggs', 'blah')
 
+    @unittest.skipIf(sys.version_info >= (3, 0), "No old-style classes in py3")
     def test_init_args(self):
         class ClassicFoo:
             def __init__(self, foo, bar):
@@ -196,9 +198,7 @@ class GetEncodableAttributesTestCase(unittest.TestCase):
 
         attrs = self.alias.getEncodableAttributes(self.obj, c)
 
-        k = attrs.keys()
-
-        k.sort()
+        k = sorted(attrs.keys())
 
         self.assertEqual(k, ['bar', 'foo'])
 
@@ -951,6 +951,7 @@ class CompilationIntegrationTestCase(unittest.TestCase):
     Integration tests for ClassAlias's
     """
 
+    @unittest.skipIf(sys.version_info >= (3, 0), "No old-style classes in py3")
     def test_slots_classic(self):
         class A:
             __slots__ = ('foo', 'bar')

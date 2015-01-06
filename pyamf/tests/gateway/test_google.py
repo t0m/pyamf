@@ -12,7 +12,14 @@ Google Web App gateway tests.
 import unittest
 import os
 
-from StringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ImportError:
+    try:
+        from StringIO import StringIO
+    except ImportError:
+        from io import StringIO
+
 
 try:
     from google.appengine.ext import webapp
@@ -69,9 +76,9 @@ class WebAppGatewayTestCase(BaseTestCase):
 
     def test_unknown_request(self):
         self.environ['wsgi.input'].write(
-            '\x00\x00\x00\x00\x00\x01\x00\x09test.test\x00\x02/1\x00\x00\x00'
-            '\x14\x0a\x00\x00\x00\x01\x08\x00\x00\x00\x00\x00\x01\x61\x02\x00'
-            '\x01\x61\x00\x00\x09')
+            b'\x00\x00\x00\x00\x00\x01\x00\x09test.test\x00\x02/1\x00\x00\x00'
+            b'\x14\x0a\x00\x00\x00\x01\x08\x00\x00\x00\x00\x00\x01\x61\x02\x00'
+            b'\x01\x61\x00\x00\x09')
         self.environ['wsgi.input'].seek(0, 0)
 
         self.gw.post()
@@ -99,8 +106,8 @@ class WebAppGatewayTestCase(BaseTestCase):
         self.gw.expose_request = True
         self.gw.addService(test, 'test.test')
 
-        self.environ['wsgi.input'].write('\x00\x00\x00\x00\x00\x01\x00\x09'
-            'test.test\x00\x02/1\x00\x00\x00\x05\x0a\x00\x00\x00\x00')
+        self.environ['wsgi.input'].write(b'\x00\x00\x00\x00\x00\x01\x00\x09'
+            b'test.test\x00\x02/1\x00\x00\x00\x05\x0a\x00\x00\x00\x00')
         self.environ['wsgi.input'].seek(0, 0)
 
         self.gw.post()
