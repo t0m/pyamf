@@ -532,8 +532,7 @@ class Encoder(codec.Encoder):
 
         @param o: The C{dict} data to be encoded to the AMF0 data stream.
         """
-        for key, val in sorted(o.items(), key=lambda k: str(k)): # sorting for deteministic tests
-            print(key)
+        for key, val in o.items():
             if type(key) in python.int_types:
                 key = str(key)
 
@@ -643,7 +642,7 @@ class Encoder(codec.Encoder):
 
         data = xml.tostring(e)
 
-        if isinstance(data, str):
+        if isinstance(data, python.unicode_type):
             data = data.encode('utf-8')
 
         self.stream.write_ulong(len(data))

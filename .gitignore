@@ -16,3 +16,5 @@ dist
 file_model
 pyamf/_version.py
 .DS_Store
+.eggs
+.tox

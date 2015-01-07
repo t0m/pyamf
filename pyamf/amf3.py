@@ -414,7 +414,7 @@ class DataInput(object):
         #FIXME nick: how to work out the code point byte size (on the fly)?
         bytes = self.stream.read(length)
 
-        return str(bytes, charset)
+        return python.unicode_type(bytes, charset)
 
     def readObject(self):
         """
@@ -1226,7 +1226,7 @@ class Encoder(codec.Encoder):
         @type   s: C{str}
         @param  s: The string data to be encoded to the AMF3 data stream.
         """
-        if type(s) is str:
+        if type(s) is python.unicode_type:
             s = self.context.getBytesForString(s)
 
         self.serialiseBytes(s)

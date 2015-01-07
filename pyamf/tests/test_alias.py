@@ -411,7 +411,7 @@ class ApplyAttributesTestCase(unittest.TestCase):
         class Foo(object):
             pass
 
-        attrs = {'foo': 'spam', 'bar': 'eggs'}
+        attrs = {u'foo': 'spam', u'bar': 'eggs'}
         self.obj = Foo()
         self.alias = ClassAlias(Foo, 'foo', defer=True)
 
@@ -420,11 +420,12 @@ class ApplyAttributesTestCase(unittest.TestCase):
 
         self.assertEqual(self.obj.__dict__, {'foo': 'spam', 'bar': 'eggs'})
 
+    @unittest.skipIf(sys.version_info >= (3, 0), "No old style classes in py3")
     def test_classic(self):
         class Foo:
             pass
 
-        attrs = {'foo': 'spam', 'bar': 'eggs'}
+        attrs = {u'foo': 'spam', u'bar': 'eggs'}
         self.obj = Foo()
         self.alias = ClassAlias(Foo, 'foo', defer=True)
 
@@ -465,7 +466,7 @@ class ApplyAttributesTestCase(unittest.TestCase):
         self.assertEqual(self.obj.__dict__, {})
 
     def test_dict(self):
-        attrs = {'foo': 'spam', 'bar': 'eggs'}
+        attrs = {u'foo': 'spam', u'bar': 'eggs'}
         self.obj = Spam()
 
         self.assertEqual(self.obj.__dict__, {})

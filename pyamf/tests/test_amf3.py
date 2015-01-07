@@ -511,7 +511,7 @@ class EncoderTestCase(ClassCacheClearingTestCase, EncoderMixIn):
     def test_generator(self):
         def foo():
             yield [1, 2, 3]
-            yield '\xff'
+            yield u'\xff'
             yield pyamf.Undefined
 
         self.assertEncoded(foo(), b'\t\x07\x01\x04\x01\x04\x02\x04\x03\x06\x05'

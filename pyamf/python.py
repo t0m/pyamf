@@ -98,14 +98,17 @@ except ImportError:
 try:
     callable = builtins.callable
 except NameError:
-    def callable(obj):
-        """
-        Compatibility function for Python 3.x
-        """
-        return hasattr(obj, '__call__')
+    try:
+        callable
+    except NameError:
+        def callable(obj):
+            """
+            Compatibility function for Python < 3.2
+            """
+            return hasattr(obj, '__call__')
 
 if hasattr(lambda _:_, 'func_name'):
-    get_func_name = operator.methodcaller('func_name')
+    get_func_name = operator.attrgetter('func_name')
 else:
     get_func_name = lambda f: f.__name__
 

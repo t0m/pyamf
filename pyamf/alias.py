@@ -297,7 +297,7 @@ class ClassAlias(object):
             self.alias, self.klass, id(self))
 
     def __eq__(self, other):
-        if isinstance(other, (bytes, str)):
+        if isinstance(other, python.str_types):
             return self.alias == other
         elif isinstance(other, self.__class__):
             return self.klass == other.klass
@@ -517,7 +517,7 @@ class ClassAlias(object):
                 return
 
             if not self.sealed:
-                assert all(isinstance(k, python.unicode_type) for k in attrs.keys())
+                assert all(isinstance(k, python.unicode_type) for k in attrs.keys()), attrs.keys()
                 obj.__dict__.update(attrs)
 
                 return

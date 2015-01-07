@@ -173,9 +173,11 @@ class EncoderTestCase(ClassCacheClearingTestCase, EncoderMixIn):
 
         x = {'a': 'spam', 'b': 'eggs'}
 
-        self.assertEncoded([[x, x]], b'\n\x00\x00\x00\x01\n\x00\x00\x00\x02'
-            b'\x03\x00\x01a\x02\x00\x04spam\x00\x01b\x02\x00\x04eggs\x00\x00'
-            b'\t\x07\x00\x02')
+        self.assertEncoded([[x, x]], (b'\n\x00\x00\x00\x01\n\x00\x00\x00\x02\x03\x00', (
+                                                        b'\x01a\x02\x00\x04spam\x00',
+                                                        b'\x01b\x02\x00\x04eggs\x00',
+                                                        b'\x00\t\x07\x00\x02',
+                                                        )))
 
     def test_amf3(self):
         self.encoder.use_amf3 = True
@@ -1016,8 +1018,12 @@ class ExceptionEncodingTestCase(ClassCacheClearingTestCase):
         except Exception as e:
             self.encoder.writeElement(e)
 
-        self.assertEqual(self.buffer.getvalue(), b'\x03\x00\x07message\x02'
-            b'\x00\x07foo bar\x00\x04name\x02\x00\tException\x00\x00\t')
+        self.assertBuffer(self.buffer.getvalue(), (b'\x03\x00', (
+                                                       b'\x07message\x02\x00',
+                                                       b'\x07foo bar\x00',
+                                                       b'\x04name\x02\x00',
+                                                       b'\tException\x00',
+                                                       b'\x00\t')))
 
     def test_user_defined(self):
         class FooBar(Exception):
@@ -1028,8 +1034,12 @@ class ExceptionEncodingTestCase(ClassCacheClearingTestCase):
         except Exception as e:
             self.encoder.writeElement(e)
 
-        self.assertEqual(self.buffer.getvalue(), b'\x03\x00\x07message\x02'
-            b'\x00\x07foo bar\x00\x04name\x02\x00\x06FooBar\x00\x00\t')
+        self.assertBuffer(self.buffer.getvalue(), (b'\x03\x00', (
+                                                                b'\x07message\x02\x00',
+                                                                b'\x07foo bar\x00',
+                                                                b'\x04name\x02\x00',
+                                                                b'\x06FooBar\x00',
+                                                                b'\x00\t')))
 
     def test_typed(self):
         class XYZ(Exception):
@@ -1042,8 +1052,13 @@ class ExceptionEncodingTestCase(ClassCacheClearingTestCase):
         except Exception as e:
             self.encoder.writeElement(e)
 
-        self.assertEqual(self.buffer.getvalue(), b'\x10\x00\x07foo.bar\x00'
-            b'\x07message\x02\x00\x05blarg\x00\x04name\x02\x00\x03XYZ\x00\x00\t')
+        self.assertBuffer(self.buffer.getvalue(), (b'\x10\x00', (
+                                                        b'\x07foo.bar\x00',
+                                                        b'\x07message\x02\x00',
+                                                        b'\x05blarg\x00',
+                                                        b'\x04name\x02\x00',
+                                                        b'\x03XYZ\x00',
+                                                        b'\x00\t',)))
 
 
 class AMF0ContextTestCase(unittest.TestCase):

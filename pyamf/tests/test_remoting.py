@@ -375,13 +375,13 @@ class ReprTestCase(unittest.TestCase):
         r = remoting.Response(u'€±')
 
         self.assertEqual(repr(r),
-            b"<Response status=/onResult>'\\u20ac\\xb1'</Response>".decode('utf-8'))
+            b"<Response status=/onResult>u'\\u20ac\\xb1'</Response>")
 
     def test_request(self):
         r = remoting.Request(u'€±', [u'å∫ç'])
 
         self.assertEqual(repr(r),
-            "<Request target='\\u20ac\\xb1'>['\\xe5\\u222b\\xe7']</Request>")
+            "<Request target=u'\\u20ac\\xb1'>[u'\\xe5\\u222b\\xe7']</Request>")
 
     def test_base_fault(self):
         r = remoting.BaseFault(code=u'å', type=u'å', description=u'å', details=u'å')
