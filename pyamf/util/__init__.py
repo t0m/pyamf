@@ -17,8 +17,7 @@ from pyamf import python
 try:
     from cpyamf.util import BufferedByteStream
 except ImportError:
-    #from pyamf.util.pure import BufferedByteStream
-    pass
+    from pyamf.util.pure import BufferedByteStream
 
 
 #: On some Python versions retrieving a negative timestamp, like

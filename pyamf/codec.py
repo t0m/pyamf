@@ -453,7 +453,7 @@ class Encoder(_Codec):
             return self.writeNumber
         elif t in python.int_types:
             return self.writeNumber
-        elif t in (list, tuple):
+        elif t in (list, tuple, set, frozenset):
             return self.writeList
         elif t is types.GeneratorType:
             return self.writeGenerator
